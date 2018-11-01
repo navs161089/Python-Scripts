@@ -1,0 +1,14 @@
+#!/usr/local/sbin/python
+from bs4 import BeautifulSoup
+import urllib.request
+import sys
+import re
+
+dom = input("Enter a valid domain name:")
+whois = "https://dig.whois.com.au/whois/"
+html_page = urllib.request.urlopen(whois + dom).read()
+soup = BeautifulSoup(html_page, 'lxml')
+print (soup.table.get_text())
+
+for result in soup.find_all('pre'):
+  print (result.get_text())
