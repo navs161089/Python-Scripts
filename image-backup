@@ -1,0 +1,12 @@
+#!/usr/bin/python
+import os
+
+MyFile=open('/tmp/vmlist.txt' , 'r')
+MakeList=MyFile.read().split()
+MyFile.close()
+
+for i in range (len(MakeList)):
+	#os.popen("lvcreate -n %s -L 10G vg_kvm" %(MakeList[i]))
+	os.popen("lvcreate -s /dev/vg_kvm/%s -L 5G -n snap" %(MakeList[i]))
+	os.popen("dd if=/dev/vg_kvm/snap | gzip > /backup/%s.gz" %(MakeList[i]))
+  
