@@ -1,0 +1,28 @@
+#!/usr/local/sbin/python
+import tarfile
+import sys
+import os 
+input_file = input("Enter a filename:")
+if ( os.path.isfile(input_file) ):
+  tar = tarfile.open(input_file, "r:tar")
+  
+  selection = input("You may please choose an option\n\n\
+  1. Extract the tar file\n\
+  2. Display informations\n\
+  3. List the contents\n\n ")
+   
+  if selection == "1":
+    filename = input("Enter a file name to extract from the tar package: ")
+    tar.extract(filename)
+  elif selection == "2":
+    filename = input("Enter a filename to inspect: ")
+    for tarinfo in tar:
+      if tarinfo.name == filename:
+         print ("\n\
+         Filename:\t\t", tarinfo.name, "\n\
+         Size:\t\t", tarinfo.size, "bytes\n\" ")
+  elif selection == "3":
+    print (tar.list(verbose=True))
+else:
+  print("The tar file doesn't exists")
+  
