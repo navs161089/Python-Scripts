@@ -1,0 +1,13 @@
+#!/usr/local/sbin/python
+from bs4 import BeautifulSoup
+import urllib.request
+import sys
+import re
+
+ipaddr = input("Enter an IP addresss:")
+geoip = "https://geoiptool.com/en/?ip=" + ipaddr
+html_page = urllib.request.urlopen(geoip).read()
+soup = BeautifulSoup(html_page, 'lxml')
+
+for result in soup.find_all("div",{"class": "data-item"}):
+  print (result.get_text())
