@@ -1,0 +1,15 @@
+#!/usr/bin/python
+import os
+import sys
+
+file1=open('exim_mainlog2', 'r')
+MakeList=file1.read().split('cwd')
+file1.close()
+startLoc = "T="
+endLoc = "for"
+for i in range (len(MakeList)):
+  myString=MakeList[i]
+  mySubString=myString[myString.find("=")+1:myString.find("args:")]
+  line = mySubString.strip()
+  if line.startswith('/'):
+    print(line)
