@@ -1,0 +1,16 @@
+#!/usr/bin/python
+import os
+import sys
+
+passfile=open('passwd.txt', 'r')
+PassList=passfile.readlines()
+passfile.close()
+my_dict = {}
+for i in range (len(PassList)):
+  myString=PassList[i]
+  SubString=myString.split(':')
+  my_dict.setdefault(SubString[-1], []).append(SubString[0])
+print "List of users with shell access:"
+result = my_dict.get('/bin/bash\n')
+for i in range(len(result)):
+  print (result[i])
