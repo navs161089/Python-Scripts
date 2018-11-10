@@ -1,0 +1,10 @@
+#!/usr/local/sbin/python
+import os
+import fnmatch
+rootPath = input("Enter the base diretory:")
+pattern = input("Enter a file extension to search:")
+
+for root,dirs,files in os.walk(rootPath):
+  for filename in fnmatch.filter(files,pattern):
+    print(os.path.join(root,filename))
+    
