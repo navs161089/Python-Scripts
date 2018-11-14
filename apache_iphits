@@ -1,0 +1,14 @@
+#!/usr/local/sbin/python
+import string
+import subprocess
+
+ips = {}
+logfile = open("/var/log/apache/access_log", "r").readlines()
+for line in logfile:
+  ip = line.split(" ")[0]
+  if 6 < len(ip) <=15:
+    ips[ip] = ips.get(ip, 0) + 1
+print ("Connections per IP address")
+for x in ips:
+  print (ips[x],  x)
+  
