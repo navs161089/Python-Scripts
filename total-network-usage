@@ -1,0 +1,23 @@
+#!/usr/local/sbin/python
+import psutil                                                          
+import pandas as pd
+network = psutil.net_io_counters(pernic=True) 
+ifaces = psutil.net_if_addrs() 
+networks = list() 
+for devices, values in ifaces.items(): 
+   ip = values[0].address 
+   data = network[devices] 
+   ifnet = dict() 
+   ifnet['ip'] = ip 
+   ifnet['iface'] = devices 
+   ifnet['sent'] = '%.2fMB' % (data.bytes_sent/1024/1024) 
+   ifnet['recv'] = '%.2fMB' % (data.bytes_recv/1024/1024) 
+   ifnet['packets_sent'] = data.packets_sent 
+   ifnet['packets_recv'] = data.packets_recv 
+   ifnet['errin'] = data.errin 
+   ifnet['errout'] = data.errout 
+   ifnet['dropin'] = data.dropin 
+   ifnet['dropout'] = data.dropout 
+   networks.append(ifnet)
+
+print(pd.DataFrame(networks))
