@@ -1,0 +1,144 @@
+#!/usr/local/sbin/python
+import string
+import os
+import platform
+import subprocess
+import psutil
+import pandas as pd
+cpu_file = open("/proc/cpuinfo", "r")
+cpu = cpu_file.readlines()
+
+for i in range (len(cpu)):
+  output = cpu[i]
+  if (output.startswith("model name")):
+     model = output
+  elif (output.startswith("cpu MHz")):
+     mhz = output
+  elif (output.startswith("cpu cores")):
+     cores = output
+print ("CPU Information:")
+print ("---------------")
+print (model)
+print (mhz)
+print (cores)
+
+print ("Paltform Details:")
+print ("----------------")
+kernel = platform.platform()
+arch = platform.machine()
+os = os.system("cat /etc/redhat-release")
+print ("Running Kernel: %s" %(kernel))
+print ("System Archtecture: %s" %(arch))
+hname = subprocess.Popen(["hostname"],shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+hname_out = hname.communicate()[0].decode().strip()
+print ("Hostname is: %s" %(hname_out))
+print ('\n')
+print ("Disk usage on the server:")
+cmd2 = "df -h"
+du = subprocess.Popen(cmd2,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+duout = du.communicate()[0].decode().strip()
+du_finalout = duout.splitlines()
+for i in range (len(du_finalout)):
+  print (du_finalout[i])
+print ("Active users logged in:")
+print ("----------------------")
+users = psutil.users()
+print (pd.DataFrame(users))
+print ('\n')
+print ("Block Devices on the server:")
+
+cmd1 = "fdisk -l | grep 'Disk /dev'"
+ds = subprocess.Popen(cmd1,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+output = ds.communicate()[0].decode().strip()
+final_out = output.splitlines()
+for i in range (len(final_out)):
+  print (final_out[i])
+
+#print ("Operating System: %s" %(os))
+print ('\n')
+print ("Memmory Details:")
+print ("----------------")
+mem_file = open("/proc/meminfo", "r")
+mem = mem_file.readlines()
+
+for i in range (len(mem)):
+  output1 = mem[i]
+  if (output1.startswith("MemTotal")):
+    total = output1
+  elif (output1.startswith("MemFree")):
+    free = output1
+print(total)
+print (free)
+print ('\n')
+
+print ("CPU Usage per cores:")
+print("---------------------")
+mpcmd = "mpstat -P ALL"
+mp = subprocess.Popen(mpcmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+mp_out = mp.communicate()[0].decode().strip()
+mp_finalout = mp_out.splitlines()
+for i in range (len(mp_finalout)):
+  print (mp_finalout[i])
+print('\n')
+print ("Disk I/O usage statistics:")
+print ("--------------------------")
+
+io_stat = subprocess.Popen(["iostat", "-x"],shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+iout = io_stat.communicate()[0].decode().strip()
+io_finalout = iout.splitlines()
+for i in range (len(io_finalout)):
+  print (io_finalout[i])
+print('\n')
+print ("Active Ports/daemons in the server:")
+print ("----------------------------------")
+netstat_port = "netstat -lntup"
+lst_ports = subprocess.Popen(netstat_port,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+lst_out = lst_ports.communicate()[0].decode().strip()
+lst_finalout = lst_out.splitlines()
+for i in range (len(lst_finalout)):
+  print (lst_finalout[i])
+
+print ('\n')
+print ("Service Monitoring Status:")
+print ("--------------------------") 
+def service_running(service_name):
+  cmd = "systemctl status %s" %service_name
+  status = subprocess.call([cmd],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,shell=True)
+  if (status == 0): 
+   output = "Running"
+   return output 
+  else: 
+   output = "Stopped"
+   return output
+
+ssh_out = service_running("sshd")
+print ("SSH Server: %s" %(ssh_out))
+postfix_out = service_running("postfix")
+print ("Mail Server: %s" %(postfix_out))
+mysql_out = service_running("mysql")
+print ("Database Server: %s" %(mysql_out))
+httpd_out = service_running("httpd")
+print ("Web Server: %s" %(httpd_out))
+print ('\n')
+print ("Network Statistics:")
+print ("-------------------")
+network = psutil.net_io_counters(pernic=True) 
+ifaces = psutil.net_if_addrs() 
+networks = list() 
+for devices, values in ifaces.items(): 
+   ip = values[0].address 
+   data = network[devices] 
+   ifnet = dict() 
+   ifnet['ip'] = ip 
+   ifnet['iface'] = devices 
+   ifnet['sent'] = '%.2fMB' % (data.bytes_sent/1024/1024) 
+   ifnet['recv'] = '%.2fMB' % (data.bytes_recv/1024/1024) 
+   ifnet['packets_sent'] = data.packets_sent 
+   ifnet['packets_recv'] = data.packets_recv 
+   ifnet['errin'] = data.errin 
+   ifnet['errout'] = data.errout 
+   ifnet['dropin'] = data.dropin 
+   ifnet['dropout'] = data.dropout 
+   networks.append(ifnet)
+
+print(pd.DataFrame(networks))
