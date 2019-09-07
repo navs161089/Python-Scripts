@@ -64,3 +64,6 @@ def ec2status(response):
 
 create_sgrp()
 create_instance()
+response = ec2.describe_instances()
+ec2_list = ec2status(response)
+print(ec2_list)
