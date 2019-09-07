@@ -1,4 +1,6 @@
 import boto3
+import pprint as pprint
+import pandas as pd
 from botocore.exceptions import ClientError
 ec2_resource = boto3.resource('ec2')
 ec2 = boto3.client('ec2')
