@@ -16,3 +16,22 @@ subnet2 = pyec2.create_subnet(VpcId=cust_vpc.id, AvailabilityZone='us-east-1f', 
 print("Created two subnets in different AV zones:")
 print(subnet1.id)
 print(subnet2.id)
+
+
+#Create Internet GateWay and attach to the VPC
+ig_boto3 = pyec2.create_internet_gateway()
+cust_vpc.attach_internet_gateway(InternetGatewayId=ig_boto3.id)
+
+print(ig_boto3.id)
+
+#Create Routing table and a public route
+rtable_boto3 = cust_vpc.create_route_table()
+route_boto3 = rtable_boto3.create_route(
+    DestinationCidrBlock='0.0.0.0/0',
+    GatewayId=ig_boto3.id
+)
+print(rtable_boto3.id)
+
+#Associate Route Table with subnet
+rtable_boto3.associate_with_subnet(SubnetId=subnet1.id)
+rtable_boto3.associate_with_subnet(SubnetId=subnet2.id)
