@@ -15,6 +15,10 @@ subnet1 = pyec2.create_subnet(VpcId=cust_vpc.id, AvailabilityZone='us-east-1b', 
 #Create Subnet2
 subnet2 = pyec2.create_subnet(VpcId=cust_vpc.id, AvailabilityZone='us-east-1f', CidrBlock='10.0.2.0/24')
 
+#Modify Subnet Attribute to AutoAssign public IPv4
+pyclec2.modify_subnet_attribute(SubnetId=subnet1.id, MapPublicIpOnLaunch={'Value': True})
+pyclec2.modify_subnet_attribute(SubnetId=subnet2.id, MapPublicIpOnLaunch={'Value': True})
+
 print("Created two subnets in different AV zones:")
 print(subnet1.id)
 print(subnet2.id)
