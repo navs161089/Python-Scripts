@@ -59,3 +59,15 @@ pyboto3_data = pyclec2.authorize_security_group_ingress(
              'ToPort': 22,
              'IpRanges': [{'CidrIp': '0.0.0.0/0'}]}
         ])
+        
+#Create Key pair
+
+outfile = open('py-boto3.pem','w')
+
+# call the boto ec2 function to create a key pair
+key_pair = pyec2.create_key_pair(KeyName='py-boto3')
+
+# capture the key and store it in a file
+KeyPairOut = str(key_pair.key_material)
+print(KeyPairOut)
+outfile.write(KeyPairOut)
